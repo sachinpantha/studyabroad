@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 
+// Set base URL for production
+axios.defaults.baseURL = 'https://studyabroad-krny.onrender.com';
+
 const AuthContext = createContext();
 
 const authReducer = (state, action) => {
