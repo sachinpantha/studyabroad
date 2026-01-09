@@ -67,16 +67,16 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <nav className="px-4 py-4 space-y-4">
+        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+          <nav className="px-4 py-6 space-y-3">
             {isAuthenticated ? (
               <>
-                <div className="text-gray-700 font-medium border-b pb-2">Hi, {user?.name}!</div>
+                <div className="text-gray-700 font-medium border-b border-gray-100 pb-3 mb-3">Hi, {user?.name}!</div>
                 {user?.isAdmin ? (
                   <Link 
                     to="/admin" 
                     onClick={() => setIsMenuOpen(false)}
-                    className="block text-blue-600 hover:text-blue-800 font-medium py-2"
+                    className="block text-blue-600 hover:text-blue-800 font-medium py-3 px-2 rounded-lg hover:bg-blue-50 transition-all"
                   >
                     Admin Panel
                   </Link>
@@ -85,14 +85,14 @@ const Header = () => {
                     <Link 
                       to="/dashboard" 
                       onClick={() => setIsMenuOpen(false)}
-                      className="block text-gray-700 hover:text-blue-600 font-medium py-2"
+                      className="block text-gray-700 hover:text-blue-600 font-medium py-3 px-2 rounded-lg hover:bg-gray-50 transition-all"
                     >
                       Dashboard
                     </Link>
                     <Link 
                       to="/apply" 
                       onClick={() => setIsMenuOpen(false)}
-                      className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full text-center font-medium"
+                      className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-full text-center font-medium shadow-md hover:shadow-lg transition-all mt-4"
                     >
                       Apply Now
                     </Link>
@@ -100,7 +100,7 @@ const Header = () => {
                 )}
                 <button 
                   onClick={handleLogout}
-                  className="block w-full text-left text-red-600 hover:text-red-800 font-medium py-2"
+                  className="block w-full text-left text-red-600 hover:text-red-800 font-medium py-3 px-2 rounded-lg hover:bg-red-50 transition-all"
                 >
                   Logout
                 </button>
@@ -110,14 +110,14 @@ const Header = () => {
                 <Link 
                   to="/login" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block text-gray-700 hover:text-blue-600 font-medium py-2"
+                  className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-full text-center font-medium shadow-md hover:shadow-lg transition-all text-lg"
                 >
                   Login
                 </Link>
                 <Link 
                   to="/register" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full text-center font-medium"
+                  className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-full text-center font-medium shadow-md hover:shadow-lg transition-all text-lg mt-3"
                 >
                   Get Started
                 </Link>
