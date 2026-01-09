@@ -74,17 +74,6 @@ const Testimonials = () => {
           autoplaySpeed: 0,
           cssEase: 'linear'
         }
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          speed: 3000,
-          autoplaySpeed: 3000,
-          cssEase: 'ease-in-out',
-          fade: false
-        }
       }
     ]
   };
@@ -101,34 +90,76 @@ const Testimonials = () => {
           </p>
         </div>
 
-        <Slider {...settings}>
-          {testimonials.map((testimonial, index) => (
-            <div key={index} className="px-4">
-              <div className={`bg-gradient-to-br ${testimonial.gradient} p-8 rounded-2xl shadow-lg min-h-[300px] flex flex-col justify-between`}>
-                <div className="flex items-center mb-6">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover mr-4"
-                  />
-                  <div>
-                    <h4 className="font-bold text-gray-800">{testimonial.name}</h4>
-                    <p className={`text-${testimonial.color} text-sm`}>{testimonial.university}</p>
-                    <div className="flex text-yellow-400 mt-1">
-                      ★★★★★
+        <div className="block md:hidden">
+          <Slider {...{
+            dots: true,
+            infinite: true,
+            speed: 500,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            autoplay: true,
+            autoplaySpeed: 3000,
+            pauseOnHover: true
+          }}>
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="px-4">
+                <div className={`bg-gradient-to-br ${testimonial.gradient} p-6 rounded-2xl shadow-lg`}>
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      className="w-12 h-12 rounded-full object-cover mr-3"
+                    />
+                    <div>
+                      <h4 className="font-bold text-gray-800 text-sm">{testimonial.name}</h4>
+                      <p className={`text-${testimonial.color} text-xs`}>{testimonial.university}</p>
+                      <div className="flex text-yellow-400 mt-1 text-xs">
+                        ★★★★★
+                      </div>
                     </div>
                   </div>
-                </div>
-                <p className="text-gray-700 italic mb-4">
-                  "{testimonial.text}"
-                </p>
-                <div className="text-sm text-gray-500">
-                  {testimonial.program}
+                  <p className="text-gray-700 italic mb-3 text-sm">
+                    "{testimonial.text}"
+                  </p>
+                  <div className="text-xs text-gray-500">
+                    {testimonial.program}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </Slider>
+            ))}
+          </Slider>
+        </div>
+
+        <div className="hidden md:block">
+          <Slider {...settings}>
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="px-4">
+                <div className={`bg-gradient-to-br ${testimonial.gradient} p-8 rounded-2xl shadow-lg min-h-[300px] flex flex-col justify-between`}>
+                  <div className="flex items-center mb-6">
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      className="w-16 h-16 rounded-full object-cover mr-4"
+                    />
+                    <div>
+                      <h4 className="font-bold text-gray-800">{testimonial.name}</h4>
+                      <p className={`text-${testimonial.color} text-sm`}>{testimonial.university}</p>
+                      <div className="flex text-yellow-400 mt-1">
+                        ★★★★★
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 italic mb-4">
+                    "{testimonial.text}"
+                  </p>
+                  <div className="text-sm text-gray-500">
+                    {testimonial.program}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Slider>
+        </div>
       </div>
     </section>
   );
