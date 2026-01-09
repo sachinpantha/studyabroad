@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AnimatedCounter from '../components/AnimatedCounter';
+import Testimonials from '../components/Testimonials';
 import { AcademicCapIcon, GlobeAltIcon, TrophyIcon } from '@heroicons/react/24/outline';
 
 const Home = () => {
@@ -25,14 +26,14 @@ const Home = () => {
             </p>
             {!isAuthenticated && (
               <div className="flex flex-col sm:flex-row gap-4 justify-center" data-aos="fade-up" data-aos-delay="400">
-                <Link 
-                  to="/register" 
+                <Link
+                  to="/register"
                   className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                 >
                   Start Your Journey
                 </Link>
-                <Link 
-                  to="/login" 
+                <Link
+                  to="/login"
                   className="border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300"
                 >
                   Login
@@ -41,7 +42,7 @@ const Home = () => {
             )}
           </div>
         </div>
-        
+
         {/* Floating Elements */}
         <div className="absolute top-20 left-10 w-20 h-20 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
         <div className="absolute bottom-20 right-10 w-32 h-32 bg-orange-500 rounded-full opacity-20 animate-bounce"></div>
@@ -142,6 +143,9 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <Testimonials />
+
       {/* Stats Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
         <div className="container mx-auto px-4">
@@ -178,44 +182,44 @@ const Home = () => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
-              { 
-                country: 'USA', 
-                flag: '🇺🇸', 
+              {
+                country: 'USA',
+                flag: '🇺🇸',
                 unis: '4000+',
                 image: 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=400&h=300&fit=crop&auto=format',
                 landmark: 'Statue of Liberty'
               },
-              { 
-                country: 'UK', 
-                flag: '🇬🇧', 
+              {
+                country: 'UK',
+                flag: '🇬🇧',
                 unis: '150+',
                 image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=300&fit=crop&auto=format',
                 landmark: 'Big Ben'
               },
-              { 
-                country: 'Canada', 
-                flag: '🇨🇦', 
+              {
+                country: 'Canada',
+                flag: '🇨🇦',
                 unis: '100+',
                 image: 'https://images.unsplash.com/photo-1517935706615-2717063c2225?w=400&h=300&fit=crop&auto=format',
                 landmark: 'CN Tower'
               },
-              { 
-                country: 'Australia', 
-                flag: '🇦🇺', 
+              {
+                country: 'Australia',
+                flag: '🇦🇺',
                 unis: '40+',
                 image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop&auto=format',
                 landmark: 'Sydney Opera House'
               },
-              { 
-                country: 'Germany', 
-                flag: '🇩🇪', 
+              {
+                country: 'Germany',
+                flag: '🇩🇪',
                 unis: '400+',
                 image: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=300&fit=crop&auto=format',
                 landmark: 'Brandenburg Gate'
               },
-              { 
-                country: 'France', 
-                flag: '🇫🇷', 
+              {
+                country: 'France',
+                flag: '🇫🇷',
                 unis: '300+',
                 image: 'https://images.unsplash.com/photo-1549144511-f099e773c147?w=400&h=300&fit=crop&auto=format',
                 landmark: 'Eiffel Tower'
@@ -223,8 +227,8 @@ const Home = () => {
             ].map((dest, index) => (
               <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden card-hover group" data-aos="zoom-in" data-aos-delay={index * 100}>
                 <div className="relative h-40 sm:h-48 overflow-hidden">
-                  <img 
-                    src={dest.image} 
+                  <img
+                    src={dest.image}
                     alt={dest.landmark}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -257,15 +261,15 @@ const Home = () => {
             Join thousands of students who achieved their dreams with us
           </p>
           {isAuthenticated ? (
-            <Link 
-              to="/apply" 
+            <Link
+              to="/apply"
               className="bg-white text-orange-500 px-10 py-4 rounded-full text-xl font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 inline-block"
             >
               Apply Now →
             </Link>
           ) : (
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="bg-white text-orange-500 px-10 py-4 rounded-full text-xl font-bold hover:shadow-2xl transform hover:scale-105 transition-all duration-300 inline-block"
             >
               Get Started Today →
