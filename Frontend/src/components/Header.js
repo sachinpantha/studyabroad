@@ -110,14 +110,14 @@ const Header = () => {
                 <Link 
                   to="/login" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-full text-center font-medium shadow-md hover:shadow-lg transition-all text-lg"
+                  className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-full text-center font-medium shadow-md hover:shadow-lg transition-all"
                 >
                   Login
                 </Link>
                 <Link 
                   to="/register" 
                   onClick={() => setIsMenuOpen(false)}
-                  className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-full text-center font-medium shadow-md hover:shadow-lg transition-all text-lg mt-3"
+                  className="block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-full text-center font-medium shadow-md hover:shadow-lg transition-all mt-3"
                 >
                   Get Started
                 </Link>
