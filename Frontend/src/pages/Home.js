@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AnimatedCounter from '../components/AnimatedCounter';
+import { AcademicCapIcon, GlobeAltIcon, TrophyIcon } from '@heroicons/react/24/outline';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
@@ -62,7 +63,7 @@ const Home = () => {
           <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg card-hover text-center" data-aos="fade-up" data-aos-delay="100">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <span className="text-2xl sm:text-3xl">🎓</span>
+                <AcademicCapIcon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">Expert Guidance</h3>
               <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Professional consultancy with personalized support</p>
@@ -88,7 +89,7 @@ const Home = () => {
 
             <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg card-hover text-center" data-aos="fade-up" data-aos-delay="200">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <span className="text-2xl sm:text-3xl">🌍</span>
+                <GlobeAltIcon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">Global Network</h3>
               <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Partnerships with top universities worldwide</p>
@@ -114,7 +115,7 @@ const Home = () => {
 
             <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg card-hover text-center" data-aos="fade-up" data-aos-delay="300">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <span className="text-2xl sm:text-3xl">🏆</span>
+                <TrophyIcon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
               </div>
               <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">Success Stories</h3>
               <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Proven track record of successful placements</p>
