@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const University = require('../models/University');
-const { auth } = require('../middleware/auth');
+const { auth, adminAuth } = require('../middleware/auth');
 
 // Get all universities with filters
 router.get('/', async (req, res) => {
@@ -76,6 +76,39 @@ router.get('/search/autocomplete', async (req, res) => {
     res.json(universities);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Get all universities (admin only)
+router.get('/admin/all', auth, adminAuth, async (req, res) => {
+  try {
+    const universities = await University.find().sort({ createdAt: -1 });
+    res.json(universities);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Create university (admin only)
+router.post('/admin', auth, adminAuth, async (req, res) => {
+  try {
+    const university = new University(req.body);
+    await university.save();
+    res.status(201).json(university);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete university (admin only)
+router.delete('/admin/:id', auth, adminAuth, async (req, res) => {
+  try {
+    const university = await University.findByIdAndDelete(req.params.id);
+    if (!university) return res.status(404).json({ message: 'University not found' });
+    
+    res.json({ message: 'University deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

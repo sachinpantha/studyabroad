@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../utils/axios';
 import { toast } from 'react-toastify';
+import FileUpload from '../components/FileUpload';
 
 const ApplyToUniversity = () => {
   const { universityId } = useParams();
@@ -358,7 +359,7 @@ const ApplyToUniversity = () => {
           {/* Document Upload */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-semibold mb-4">Required Documents</h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-6">
               {[
                 { key: 'transcripts', label: 'Academic Transcripts' },
                 { key: 'passport', label: 'Passport Copy' },
@@ -366,16 +367,15 @@ const ApplyToUniversity = () => {
                 { key: 'sop', label: 'Statement of Purpose' },
                 { key: 'cv', label: 'CV/Resume' }
               ].map(({ key, label }) => (
-                <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-                  <input
-                    type="file"
-                    name={key}
-                    onChange={handleFileChange}
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  />
-                </div>
+                <FileUpload
+                  key={key}
+                  label={label}
+                  name={key}
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                  onChange={handleFileChange}
+                  uploaded={!!documents[key]}
+                  fileName={documents[key]?.name}
+                />
               ))}
             </div>
           </div>

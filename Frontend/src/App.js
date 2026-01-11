@@ -21,6 +21,7 @@ import Apply from './pages/Apply';
 import ApplyToUniversity from './pages/ApplyToUniversity';
 import ApplicationDetails from './pages/ApplicationDetails';
 import EnhancedAdminPanel from './pages/EnhancedAdminPanel';
+import Notices from './pages/Notices';
 
 function App() {
   useEffect(() => {
@@ -85,6 +86,11 @@ function App() {
             <Route path="/admin" element={
               <ProtectedRoute adminOnly={true}>
                 <EnhancedAdminPanel />
+              </ProtectedRoute>
+            } />
+            <Route path="/notices" element={
+              <ProtectedRoute>
+                <Notices />
               </ProtectedRoute>
             } />
           </Routes>

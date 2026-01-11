@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../utils/axios';
 import { toast } from 'react-toastify';
+import FileUpload from '../components/FileUpload';
 
 const Apply = () => {
   const [formData, setFormData] = useState({
@@ -190,65 +191,58 @@ const Apply = () => {
               </div>
             </div>
 
-            {/* Documents Upload */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-2xl font-semibold mb-6">Documents (Optional)</h2>
-              <p className="text-gray-600 mb-4">You can upload documents now or later from your dashboard.</p>
+              <p className="text-gray-600 mb-6">You can upload documents now or later from your dashboard.</p>
               <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Academic Transcripts</label>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setDocuments({...documents, transcripts: e.target.files[0]})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Passport Copy</label>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setDocuments({...documents, passport: e.target.files[0]})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Citizenship Certificate</label>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setDocuments({...documents, citizenship: e.target.files[0]})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">English Proficiency Test (IELTS/TOEFL)</label>
-                  <input
-                    type="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setDocuments({...documents, englishTest: e.target.files[0]})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Statement of Purpose</label>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setDocuments({...documents, sop: e.target.files[0]})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">CV/Resume</label>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setDocuments({...documents, cv: e.target.files[0]})}
-                  />
-                </div>
+                <FileUpload
+                  label="Academic Transcripts"
+                  name="transcripts"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => setDocuments({...documents, transcripts: e.target.files[0]})}
+                  uploaded={!!documents.transcripts}
+                  fileName={documents.transcripts?.name}
+                />
+                <FileUpload
+                  label="Passport Copy"
+                  name="passport"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => setDocuments({...documents, passport: e.target.files[0]})}
+                  uploaded={!!documents.passport}
+                  fileName={documents.passport?.name}
+                />
+                <FileUpload
+                  label="Citizenship Certificate"
+                  name="citizenship"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => setDocuments({...documents, citizenship: e.target.files[0]})}
+                  uploaded={!!documents.citizenship}
+                  fileName={documents.citizenship?.name}
+                />
+                <FileUpload
+                  label="English Proficiency Test (IELTS/TOEFL)"
+                  name="englishTest"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => setDocuments({...documents, englishTest: e.target.files[0]})}
+                  uploaded={!!documents.englishTest}
+                  fileName={documents.englishTest?.name}
+                />
+                <FileUpload
+                  label="Statement of Purpose"
+                  name="sop"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => setDocuments({...documents, sop: e.target.files[0]})}
+                  uploaded={!!documents.sop}
+                  fileName={documents.sop?.name}
+                />
+                <FileUpload
+                  label="CV/Resume"
+                  name="cv"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => setDocuments({...documents, cv: e.target.files[0]})}
+                  uploaded={!!documents.cv}
+                  fileName={documents.cv?.name}
+                />
               </div>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-md">

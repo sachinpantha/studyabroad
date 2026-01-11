@@ -46,13 +46,47 @@ router.get('/stats', auth, adminAuth, async (req, res) => {
     const pendingApplications = await Application.countDocuments({ status: 'applied' });
     const approvedApplications = await Application.countDocuments({ status: 'offer-received' });
     const rejectedApplications = await Application.countDocuments({ status: 'rejected' });
+    const totalUsers = await User.countDocuments({ role: { $ne: 'admin' } });
 
     res.json({
       totalApplications,
       pendingApplications,
       approvedApplications,
-      rejectedApplications
+      rejectedApplications,
+      totalUsers
     });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get all users
+router.get('/users', auth, adminAuth, async (req, res) => {
+  try {
+    const users = await User.find({ role: { $ne: 'admin' } })
+      .select('-password')
+      .sort({ createdAt: -1 });
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Delete user
+router.delete('/users/:id', auth, adminAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    if (user.role === 'admin') {
+      return res.status(403).json({ message: 'Cannot delete admin user' });
+    }
+    
+    await Application.deleteMany({ userId: req.params.id });
+    await User.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: 'User deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

@@ -86,4 +86,36 @@ router.get('/admin/all', auth, async (req, res) => {
   }
 });
 
+// Update blog
+router.put('/:id', auth, async (req, res) => {
+  try {
+    if (!req.user.isAdmin) return res.status(403).json({ message: 'Admin access required' });
+    
+    const blog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, publishDate: req.body.isPublished ? new Date() : null },
+      { new: true }
+    );
+    
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+    res.json(blog);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Delete blog
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    if (!req.user.isAdmin) return res.status(403).json({ message: 'Admin access required' });
+    
+    const blog = await Blog.findByIdAndDelete(req.params.id);
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+    
+    res.json({ message: 'Blog deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

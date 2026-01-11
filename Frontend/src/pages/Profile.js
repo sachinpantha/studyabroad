@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../utils/axios';
 import { toast } from 'react-toastify';
+import FileUpload from '../components/FileUpload';
 
 const Profile = () => {
   const [profile, setProfile] = useState({
@@ -204,34 +205,28 @@ const Profile = () => {
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-4">
-              {['passport', 'transcript', 'certificate', 'ielts', 'toefl'].map((docType) => (
-                <div key={docType} className="border rounded-lg p-4">
-                  <h3 className="font-medium capitalize mb-2">{docType.replace('-', ' ')}</h3>
-                  {documents.find(doc => doc.type === docType) ? (
-                    <div className="text-green-600">
-                      <div>✓ Uploaded: {documents.find(doc => doc.type === docType)?.name}</div>
-                      {documents.find(doc => doc.type === docType)?.cloudinaryUrl && (
-                        <a 
-                          href={documents.find(doc => doc.type === docType)?.cloudinaryUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline text-sm"
-                        >
-                          View Document
-                        </a>
-                      )}
-                    </div>
-                  ) : (
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleDocumentUpload(e, docType)}
-                      className="w-full text-sm"
-                    />
-                  )}
-                </div>
-              ))}
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { key: 'passport', label: 'Passport Copy' },
+                { key: 'transcript', label: 'Academic Transcript' },
+                { key: 'certificate', label: 'Degree Certificate' },
+                { key: 'ielts', label: 'IELTS Score Report' },
+                { key: 'toefl', label: 'TOEFL Score Report' }
+              ].map(({ key, label }) => {
+                const uploadedDoc = documents.find(doc => doc.type === key);
+                return (
+                  <FileUpload
+                    key={key}
+                    label={label}
+                    name={key}
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => handleDocumentUpload(e, key)}
+                    uploaded={!!uploadedDoc}
+                    fileName={uploadedDoc?.name}
+                    viewUrl={uploadedDoc?.cloudinaryUrl}
+                  />
+                );
+              })}
             </div>
           </div>
 

@@ -4,10 +4,13 @@ const cloudinary = require('../config/cloudinary');
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'study-abroad-docs',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'],
-    resource_type: 'auto'
+  params: (req, file) => {
+    const isPDF = file.mimetype === 'application/pdf';
+    return {
+      folder: 'study-abroad-docs',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'],
+      resource_type: isPDF ? 'raw' : 'auto'
+    };
   }
 });
 
