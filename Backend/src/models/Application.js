@@ -19,6 +19,7 @@ const applicationSchema = new mongoose.Schema({
   documents: [{
     name: String,
     path: String,
+    originalName: String,
     uploadDate: { type: Date, default: Date.now }
   }],
   status: { 

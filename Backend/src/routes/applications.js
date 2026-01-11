@@ -5,17 +5,65 @@ const upload = require('../middleware/upload');
 
 const router = express.Router();
 
-// Create application
-router.post('/', auth, async (req, res) => {
+// Create application without files
+router.post('/simple', auth, async (req, res) => {
   try {
     const application = new Application({
       userId: req.user._id,
-      ...req.body
+      ...req.body,
+      documents: []
     });
     await application.save();
     res.status(201).json(application);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Simple application creation error:', error);
+    res.status(500).json({ message: error.message || 'Server error' });
+  }
+});
+
+// Create application
+router.post('/', auth, upload.fields([
+  { name: 'transcripts', maxCount: 1 },
+  { name: 'passport', maxCount: 1 },
+  { name: 'citizenship', maxCount: 1 },
+  { name: 'englishTest', maxCount: 1 },
+  { name: 'sop', maxCount: 1 },
+  { name: 'cv', maxCount: 1 }
+]), async (req, res) => {
+  try {
+    let applicationData;
+    if (req.body.applicationData) {
+      applicationData = JSON.parse(req.body.applicationData);
+    } else {
+      applicationData = req.body;
+    }
+    
+    const documents = [];
+    if (req.files && Object.keys(req.files).length > 0) {
+      Object.keys(req.files).forEach(key => {
+        if (req.files[key] && req.files[key][0]) {
+          documents.push({
+            name: key,
+            path: req.files[key][0].path,
+            originalName: req.files[key][0].originalname
+          });
+        }
+      });
+    }
+    
+    const application = new Application({
+      userId: req.user._id,
+      ...applicationData,
+      documents
+    });
+    await application.save();
+    res.status(201).json(application);
+  } catch (error) {
+    console.error('Backend application creation error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Request body:', req.body);
+    console.error('Request files:', req.files);
+    res.status(500).json({ message: error.message || 'Server error' });
   }
 });
 

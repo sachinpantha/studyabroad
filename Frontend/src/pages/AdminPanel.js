@@ -100,6 +100,7 @@ const AdminPanel = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Course</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Country</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Documents</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Applied</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
@@ -119,6 +120,9 @@ const AdminPanel = () => {
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(app.status)}`}>
                         {app.status.replace('-', ' ').toUpperCase()}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {app.documents?.length || 0} files
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(app.createdAt).toLocaleDateString()}
@@ -151,6 +155,27 @@ const AdminPanel = () => {
                 <h4 className="font-medium mb-2">Student: {selectedApp.personalInfo.fullName}</h4>
                 <p className="text-gray-600">Course: {selectedApp.preferredCourse}</p>
                 <p className="text-gray-600">Country: {selectedApp.preferredCountry}</p>
+                
+                {selectedApp.documents && selectedApp.documents.length > 0 && (
+                  <div className="mt-4">
+                    <h5 className="font-medium mb-2">Uploaded Documents:</h5>
+                    <div className="space-y-2">
+                      {selectedApp.documents.map((doc, index) => (
+                        <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                          <span className="text-sm">{doc.name} - {doc.originalName}</span>
+                          <a 
+                            href={`/api/documents/${doc.path.split('/').pop()}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline text-sm"
+                          >
+                            View
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="mb-4">
