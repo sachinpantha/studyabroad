@@ -38,6 +38,28 @@ router.post('/', auth, upload.fields([
       applicationData = req.body;
     }
     
+    // Validate required fields
+    console.log('Received applicationData:', applicationData);
+    
+    // Map preferredCourse to course if it exists
+    const course = applicationData.course || applicationData.preferredCourse;
+    const intake = applicationData.intake;
+    
+    console.log('Course value:', course);
+    console.log('Intake value:', intake);
+    console.log('UniversityId:', applicationData.universityId);
+    console.log('CustomUniversityName:', applicationData.customUniversityName);
+    
+    if (!course || course.trim() === '') {
+      return res.status(400).json({ message: 'Course is required' });
+    }
+    if (!intake || intake.trim() === '') {
+      return res.status(400).json({ message: 'Intake is required' });
+    }
+    if (!applicationData.universityId && (!applicationData.customUniversityName || applicationData.customUniversityName.trim() === '')) {
+      return res.status(400).json({ message: 'University selection is required' });
+    }
+    
     const documents = [];
     if (req.files && Object.keys(req.files).length > 0) {
       Object.keys(req.files).forEach(key => {
@@ -45,17 +67,30 @@ router.post('/', auth, upload.fields([
           documents.push({
             name: key,
             path: req.files[key][0].path,
+            cloudinaryUrl: req.files[key][0].path,
             originalName: req.files[key][0].originalname
           });
         }
       });
     }
     
-    const application = new Application({
+    // Prepare application data
+    const appData = {
       userId: req.user._id,
       ...applicationData,
+      course: course, // Use mapped course value
       documents
-    });
+    };
+    
+    // Handle custom university case
+    if (!applicationData.universityId && applicationData.customUniversityName) {
+      // Create a temporary universityId or handle custom university
+      appData.customUniversity = applicationData.customUniversityName;
+      // Set universityId to null for custom universities
+      delete appData.universityId;
+    }
+    
+    const application = new Application(appData);
     await application.save();
     res.status(201).json(application);
   } catch (error) {
