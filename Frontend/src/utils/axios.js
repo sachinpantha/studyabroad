@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://studyabroad-krny.onrender.com'
-  : 'https://studyabroad-krny.onrender.com';
+  : 'http://localhost:5000';
 
 axios.defaults.baseURL = API_BASE_URL;
 

@@ -8,13 +8,19 @@ import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
 import ProtectedRoute from './components/ProtectedRoute';
 
-import Home from './pages/Home';
+import NepalHome from './pages/NepalHome';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import Universities from './pages/Universities';
+import UniversityDetail from './pages/UniversityDetail';
+import NepalScholarshipCalculator from './pages/NepalScholarshipCalculator';
+import Blog from './pages/Blog';
 import Apply from './pages/Apply';
+import ApplyToUniversity from './pages/ApplyToUniversity';
 import ApplicationDetails from './pages/ApplicationDetails';
-import AdminPanel from './pages/AdminPanel';
+import EnhancedAdminPanel from './pages/EnhancedAdminPanel';
 
 function App() {
   useEffect(() => {
@@ -31,7 +37,7 @@ function App() {
         <div className="App">
           <Header />
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<NepalHome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={
@@ -39,6 +45,33 @@ function App() {
                 <Dashboard />
               </ProtectedRoute>
             } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+            <Route path="/universities" element={
+              <ProtectedRoute>
+                <Universities />
+              </ProtectedRoute>
+            } />
+            <Route path="/university/:id" element={
+              <ProtectedRoute>
+                <UniversityDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/apply/:universityId" element={
+              <ProtectedRoute>
+                <ApplyToUniversity />
+              </ProtectedRoute>
+            } />
+            <Route path="/scholarship-calculator" element={
+              <ProtectedRoute>
+                <NepalScholarshipCalculator />
+              </ProtectedRoute>
+            } />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<Blog />} />
             <Route path="/apply" element={
               <ProtectedRoute>
                 <Apply />
@@ -51,7 +84,7 @@ function App() {
             } />
             <Route path="/admin" element={
               <ProtectedRoute adminOnly={true}>
-                <AdminPanel />
+                <EnhancedAdminPanel />
               </ProtectedRoute>
             } />
           </Routes>

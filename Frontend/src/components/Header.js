@@ -16,13 +16,26 @@ const Header = () => {
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link to="/" className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          StudyAbroad
+          StudyIndia Nepal
         </Link>
         
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           {isAuthenticated ? (
             <>
+              {!user?.isAdmin && (
+                <>
+                  <Link to="/universities" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                    Universities
+                  </Link>
+                  <Link to="/scholarship-calculator" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                    Scholarships
+                  </Link>
+                  <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                    Blog
+                  </Link>
+                </>
+              )}
               <span className="text-gray-700 font-medium">Hi, {user?.name}!</span>
               {user?.isAdmin ? (
                 <Link to="/admin" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">
@@ -44,6 +57,9 @@ const Header = () => {
             </>
           ) : (
             <>
+              <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                Blog
+              </Link>
               <Link to="/login" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Login
               </Link>
@@ -82,6 +98,27 @@ const Header = () => {
                   </Link>
                 ) : (
                   <>
+                    <Link 
+                      to="/universities" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block text-gray-700 hover:text-blue-600 font-medium py-3 px-2 rounded-lg hover:bg-gray-50 transition-all"
+                    >
+                      Universities
+                    </Link>
+                    <Link 
+                      to="/scholarship-calculator" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block text-gray-700 hover:text-blue-600 font-medium py-3 px-2 rounded-lg hover:bg-gray-50 transition-all"
+                    >
+                      Scholarships
+                    </Link>
+                    <Link 
+                      to="/blog" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block text-gray-700 hover:text-blue-600 font-medium py-3 px-2 rounded-lg hover:bg-gray-50 transition-all"
+                    >
+                      Blog
+                    </Link>
                     <Link 
                       to="/dashboard" 
                       onClick={() => setIsMenuOpen(false)}

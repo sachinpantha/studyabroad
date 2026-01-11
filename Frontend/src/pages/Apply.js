@@ -18,7 +18,9 @@ const Apply = () => {
       graduationYear: ''
     },
     preferredCountry: '',
-    preferredCourse: ''
+    preferredCourse: '',
+    intake: '',
+    customUniversityName: ''
   });
   const [documents, setDocuments] = useState({});
   const [loading, setLoading] = useState(false);
@@ -277,6 +279,31 @@ const Apply = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value={formData.preferredCourse}
                     onChange={(e) => setFormData({...formData, preferredCourse: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Intake</label>
+                  <select
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={formData.intake || ''}
+                    onChange={(e) => setFormData({...formData, intake: e.target.value})}
+                  >
+                    <option value="">Select Intake</option>
+                    <option value="Fall 2024">Fall 2024</option>
+                    <option value="Spring 2025">Spring 2025</option>
+                    <option value="Summer 2025">Summer 2025</option>
+                    <option value="Fall 2025">Fall 2025</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">University Name (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="Enter specific university or leave blank"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={formData.customUniversityName || ''}
+                    onChange={(e) => setFormData({...formData, customUniversityName: e.target.value})}
                   />
                 </div>
               </div>
