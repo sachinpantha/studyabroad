@@ -32,47 +32,33 @@ const Apply = () => {
     setLoading(true);
     
     try {
-      // Check if any files are selected
       const hasFiles = Object.values(documents).some(file => file instanceof File);
+      let response;
       
       if (hasFiles) {
-        // Submit with files
         const formDataToSend = new FormData();
         formDataToSend.append('applicationData', JSON.stringify(formData));
         
-        Object.keys(documents).forEach(key => {
-          if (documents[key] && documents[key] instanceof File) {
-            formDataToSend.append(key, documents[key]);
+        Object.entries(documents).forEach(([key, file]) => {
+          if (file instanceof File) {
+            formDataToSend.append(key, file);
           }
         });
         
-        const response = await axios.post('/api/applications', formDataToSend, {
-          headers: { 
-            'Content-Type': 'multipart/form-data'
-          },
-          timeout: 30000
-        });
-        toast.success('Application submitted successfully!');
-        navigate(`/application/${response.data.data._id}`);
+        response = await axios.post('/api/applications', formDataToSend, { timeout: 30000 });
       } else {
-        // Submit without files (regular JSON)
-        console.log('Submitting form data:', formData);
-        const response = await axios.post('/api/applications/simple', formData, {
-          timeout: 30000
-        });
-        toast.success('Application submitted successfully!');
-        navigate(`/application/${response.data.data._id}`);
+        response = await axios.post('/api/applications/simple', formData, { timeout: 30000 });
       }
-    } catch (error) {
-      console.error('Frontend submission error:', error);
       
-      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
-        toast.error('Server is currently unavailable. Please try again in a few minutes.');
-      } else if (error.code === 'ECONNABORTED') {
-        toast.error('Request timeout. Please check your connection and try again.');
-      } else {
-        toast.error(error.response?.data?.message || error.message || 'Failed to submit application');
-      }
+      const applicationId = response.data?.data?._id || response.data?._id;
+      if (!applicationId) throw new Error('Invalid response format');
+      
+      toast.success('Application submitted successfully!');
+      navigate(`/application/${applicationId}`);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || 'Submission failed';
+      toast.error(errorMessage);
+      console.error('Submission error:', error);
     } finally {
       setLoading(false);
     }

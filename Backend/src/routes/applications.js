@@ -70,81 +70,105 @@ router.post('/simple', auth, async (req, res) => {
 
 // Create application with files
 router.post('/', auth, (req, res) => {
-  upload.fields([
+  const uploadMiddleware = upload.fields([
     { name: 'transcripts', maxCount: 1 },
     { name: 'passport', maxCount: 1 },
     { name: 'citizenship', maxCount: 1 },
     { name: 'englishTest', maxCount: 1 },
     { name: 'sop', maxCount: 1 },
     { name: 'cv', maxCount: 1 }
-  ])(req, res, async (err) => {
+  ]);
+  
+  uploadMiddleware(req, res, async (uploadError) => {
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      return res.status(400).json({ 
+        success: false, 
+        message: `File upload failed: ${uploadError.message}` 
+      });
+    }
+    
     try {
-      console.log('=== FILE UPLOAD DEBUG ===');
-      console.log('Request body:', req.body);
-      console.log('Request files:', req.files);
-      console.log('Upload error:', err);
-      
-      if (err) {
-        console.error('Multer error:', err);
-        return res.status(400).json({ success: false, message: `File upload error: ${err.message}` });
-      }
-      
       let applicationData;
-      try {
-        applicationData = req.body.applicationData ? JSON.parse(req.body.applicationData) : req.body;
-      } catch (parseError) {
-        return res.status(400).json({ success: false, message: 'Invalid JSON in applicationData' });
+      
+      if (req.body.applicationData) {
+        try {
+          applicationData = JSON.parse(req.body.applicationData);
+        } catch (parseError) {
+          return res.status(400).json({ 
+            success: false, 
+            message: 'Invalid application data format' 
+          });
+        }
+      } else {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Application data is required' 
+        });
       }
       
-      const course = applicationData.course || applicationData.preferredCourse;
-      const intake = applicationData.intake;
+      const { personalInfo, academicInfo, preferredCourse, intake } = applicationData;
       
-      if (!course) {
-        return res.status(400).json({ success: false, message: 'Course is required' });
-      }
-      if (!intake) {
-        return res.status(400).json({ success: false, message: 'Intake is required' });
+      // Validate required fields
+      if (!personalInfo?.fullName || !academicInfo?.highestQualification || !preferredCourse || !intake) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Missing required fields' 
+        });
       }
       
       const documents = [];
-      if (req.files && Object.keys(req.files).length > 0) {
-        Object.keys(req.files).forEach(key => {
-          if (req.files[key] && req.files[key][0]) {
+      if (req.files) {
+        Object.entries(req.files).forEach(([key, fileArray]) => {
+          if (fileArray?.[0]) {
             documents.push({
               name: key,
-              path: req.files[key][0].path,
-              cloudinaryUrl: req.files[key][0].path,
-              originalName: req.files[key][0].originalname
+              path: fileArray[0].path,
+              cloudinaryUrl: fileArray[0].path,
+              originalName: fileArray[0].originalname
             });
           }
         });
       }
       
-      const appData = {
+      const application = new Application({
         userId: req.user._id,
-        personalInfo: applicationData.personalInfo,
-        academicInfo: applicationData.academicInfo,
-        course: course,
+        personalInfo: {
+          fullName: personalInfo.fullName,
+          dateOfBirth: personalInfo.dateOfBirth,
+          nationality: personalInfo.nationality,
+          passportNumber: personalInfo.passportNumber
+        },
+        academicInfo: {
+          highestQualification: academicInfo.highestQualification,
+          institution: academicInfo.institution,
+          gpa: parseFloat(academicInfo.gpa),
+          graduationYear: parseInt(academicInfo.graduationYear)
+        },
+        course: preferredCourse,
         intake: intake,
         customUniversity: applicationData.customUniversityName || 'General Application',
         documents
-      };
+      });
       
-      const application = new Application(appData);
       await application.save();
-      
       res.status(201).json({ success: true, data: application });
+      
     } catch (error) {
-      console.error('=== FILE APPLICATION ERROR ===');
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+      console.error('Application creation error:', error);
       
       if (error.name === 'ValidationError') {
         const validationErrors = Object.values(error.errors).map(err => err.message);
-        return res.status(400).json({ success: false, message: `Validation failed: ${validationErrors.join(', ')}` });
+        return res.status(400).json({ 
+          success: false, 
+          message: `Validation failed: ${validationErrors.join(', ')}` 
+        });
       }
       
-      res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+      res.status(500).json({ 
+        success: false, 
+        message: 'Internal server error' 
+      });
     }
   });
 });
@@ -194,12 +218,13 @@ router.get('/:id', auth, async (req, res) => {
     });
     
     if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
+      return res.status(404).json({ success: false, message: 'Application not found' });
     }
 
-    res.json(application);
+    res.json({ success: true, data: application });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Get application error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
