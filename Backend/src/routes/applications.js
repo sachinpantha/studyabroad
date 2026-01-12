@@ -16,7 +16,6 @@ router.post('/simple', auth, async (req, res) => {
       academicInfo: req.body.academicInfo,
       course: req.body.preferredCourse,
       intake: req.body.intake,
-      preferredCountry: req.body.preferredCountry,
       customUniversity: req.body.customUniversityName,
       documents: []
     });
@@ -25,7 +24,7 @@ router.post('/simple', auth, async (req, res) => {
     res.status(201).json(application);
   } catch (error) {
     console.error('Simple application creation error:', error);
-    res.status(500).json({ message: error.message || 'Server error' });
+    res.status(400).json({ message: error.message });
   }
 });
 
