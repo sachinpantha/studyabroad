@@ -233,4 +233,24 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
+// Delete application
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const application = await Application.findOne({ 
+      _id: req.params.id, 
+      userId: req.user._id 
+    });
+    
+    if (!application) {
+      return res.status(404).json({ success: false, message: 'Application not found' });
+    }
+
+    await Application.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Application deleted successfully' });
+  } catch (error) {
+    console.error('Delete application error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 module.exports = router;

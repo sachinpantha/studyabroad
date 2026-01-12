@@ -16,7 +16,7 @@ const Header = () => {
     <header className="bg-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link to="/" className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          StudyIndia Nepal
+          StudyAbroad
         </Link>
         
         {/* Desktop Navigation */}

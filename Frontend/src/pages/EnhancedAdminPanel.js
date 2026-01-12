@@ -26,6 +26,7 @@ const EnhancedAdminPanel = () => {
   const [editingNotice, setEditingNotice] = useState(null);
   const [deleteNoticeModal, setDeleteNoticeModal] = useState({ show: false, noticeId: null, noticeTitle: '' });
   const [deleteBlogModal, setDeleteBlogModal] = useState({ show: false, blogId: null, blogTitle: '' });
+  const [deleteApplicationModal, setDeleteApplicationModal] = useState({ show: false, appId: null, appName: '' });
   const [universityForm, setUniversityForm] = useState({ name: '', country: '', city: '' });
 
   // Blog form state
@@ -249,6 +250,21 @@ const EnhancedAdminPanel = () => {
       } catch (error) {
         toast.error('Failed to delete university');
       }
+    }
+  };
+
+  const confirmDeleteApplication = (appId, appName) => {
+    setDeleteApplicationModal({ show: true, appId, appName });
+  };
+
+  const deleteApplication = async (appId) => {
+    try {
+      await axios.delete(`/api/admin/applications/${appId}`);
+      toast.success('Application deleted successfully');
+      setDeleteApplicationModal({ show: false, appId: null, appName: '' });
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to delete application');
     }
   };
 
@@ -541,6 +557,12 @@ const EnhancedAdminPanel = () => {
                                 <option value="reported-to-college">Reported to College</option>
                                 <option value="rejected">Rejected</option>
                               </select>
+                              <button
+                                onClick={() => confirmDeleteApplication(app._id, app.personalInfo?.fullName || app.userId?.name)}
+                                className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
+                              >
+                                Delete
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -785,6 +807,32 @@ const EnhancedAdminPanel = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Application Confirmation Modal */}
+      {deleteApplicationModal.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Delete Application</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete the application from <strong>{deleteApplicationModal.appName}</strong>?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setDeleteApplicationModal({ show: false, appId: null, appName: '' })}
+                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteApplication(deleteApplicationModal.appId)}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Blog Confirmation Modal */}
       {deleteBlogModal.show && (
