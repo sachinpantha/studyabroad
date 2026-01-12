@@ -70,6 +70,16 @@ router.post('/simple', auth, async (req, res) => {
 
 // Create application with files
 router.post('/', auth, (req, res) => {
+  // Skip file upload if no files, use simple route
+  const hasFiles = req.headers['content-type']?.includes('multipart/form-data');
+  
+  if (!hasFiles) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Use /simple endpoint for applications without files' 
+    });
+  }
+  
   const uploadMiddleware = upload.fields([
     { name: 'transcripts', maxCount: 1 },
     { name: 'passport', maxCount: 1 },
@@ -80,36 +90,40 @@ router.post('/', auth, (req, res) => {
   ]);
   
   uploadMiddleware(req, res, async (uploadError) => {
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      return res.status(400).json({ 
-        success: false, 
-        message: `File upload failed: ${uploadError.message}` 
-      });
-    }
-    
     try {
-      let applicationData;
+      console.log('Cloudinary config check:', {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'MISSING',
+        api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+        api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING'
+      });
       
-      if (req.body.applicationData) {
-        try {
-          applicationData = JSON.parse(req.body.applicationData);
-        } catch (parseError) {
-          return res.status(400).json({ 
-            success: false, 
-            message: 'Invalid application data format' 
-          });
-        }
-      } else {
+      if (uploadError) {
+        console.error('Multer upload error:', uploadError);
+        return res.status(400).json({ 
+          success: false, 
+          message: `Upload error: ${uploadError.message || 'File processing failed'}` 
+        });
+      }
+      
+      if (!req.body.applicationData) {
         return res.status(400).json({ 
           success: false, 
           message: 'Application data is required' 
         });
       }
       
+      let applicationData;
+      try {
+        applicationData = JSON.parse(req.body.applicationData);
+      } catch (parseError) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Invalid application data format' 
+        });
+      }
+      
       const { personalInfo, academicInfo, preferredCourse, intake } = applicationData;
       
-      // Validate required fields
       if (!personalInfo?.fullName || !academicInfo?.highestQualification || !preferredCourse || !intake) {
         return res.status(400).json({ 
           success: false, 
@@ -156,18 +170,9 @@ router.post('/', auth, (req, res) => {
       
     } catch (error) {
       console.error('Application creation error:', error);
-      
-      if (error.name === 'ValidationError') {
-        const validationErrors = Object.values(error.errors).map(err => err.message);
-        return res.status(400).json({ 
-          success: false, 
-          message: `Validation failed: ${validationErrors.join(', ')}` 
-        });
-      }
-      
       res.status(500).json({ 
         success: false, 
-        message: 'Internal server error' 
+        message: 'Server error during application creation' 
       });
     }
   });
