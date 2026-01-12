@@ -32,13 +32,37 @@ const Apply = () => {
     setLoading(true);
     
     try {
-      // Always use simple route for now
-      console.log('Submitting form data:', formData);
-      const response = await axios.post('/api/applications/simple', formData, {
-        timeout: 30000
-      });
-      toast.success('Application submitted successfully!');
-      navigate(`/application/${response.data._id}`);
+      // Check if any files are selected
+      const hasFiles = Object.values(documents).some(file => file instanceof File);
+      
+      if (hasFiles) {
+        // Submit with files
+        const formDataToSend = new FormData();
+        formDataToSend.append('applicationData', JSON.stringify(formData));
+        
+        Object.keys(documents).forEach(key => {
+          if (documents[key] && documents[key] instanceof File) {
+            formDataToSend.append(key, documents[key]);
+          }
+        });
+        
+        const response = await axios.post('/api/applications', formDataToSend, {
+          headers: { 
+            'Content-Type': 'multipart/form-data'
+          },
+          timeout: 30000
+        });
+        toast.success('Application submitted successfully!');
+        navigate(`/application/${response.data.data._id}`);
+      } else {
+        // Submit without files (regular JSON)
+        console.log('Submitting form data:', formData);
+        const response = await axios.post('/api/applications/simple', formData, {
+          timeout: 30000
+        });
+        toast.success('Application submitted successfully!');
+        navigate(`/application/${response.data.data._id}`);
+      }
     } catch (error) {
       console.error('Frontend submission error:', error);
       

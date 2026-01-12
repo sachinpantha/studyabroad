@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../utils/axios';
 import { toast } from 'react-toastify';
 
 const ApplicationDetails = () => {
@@ -16,8 +16,9 @@ const ApplicationDetails = () => {
   const fetchApplication = async () => {
     try {
       const response = await axios.get(`/api/applications/${id}`);
-      setApplication(response.data);
+      setApplication(response.data.data || response.data);
     } catch (error) {
+      console.error('Fetch application error:', error);
       toast.error('Failed to fetch application');
     } finally {
       setLoading(false);
@@ -39,10 +40,11 @@ const ApplicationDetails = () => {
       const response = await axios.post(`/api/applications/${id}/documents`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setApplication(response.data);
+      setApplication(response.data.data || response.data);
       toast.success('Documents uploaded successfully!');
     } catch (error) {
-      toast.error('Failed to upload documents');
+      console.error('Document upload error:', error);
+      toast.error(error.response?.data?.message || 'Failed to upload documents');
     } finally {
       setUploading(false);
     }
