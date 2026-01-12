@@ -8,11 +8,19 @@ const router = express.Router();
 // Create application without files
 router.post('/simple', auth, async (req, res) => {
   try {
+    console.log('Simple application request:', req.body);
+    
     const application = new Application({
       userId: req.user._id,
-      ...req.body,
+      personalInfo: req.body.personalInfo,
+      academicInfo: req.body.academicInfo,
+      course: req.body.preferredCourse,
+      intake: req.body.intake,
+      preferredCountry: req.body.preferredCountry,
+      customUniversity: req.body.customUniversityName,
       documents: []
     });
+    
     await application.save();
     res.status(201).json(application);
   } catch (error) {

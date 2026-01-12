@@ -48,27 +48,31 @@ const Apply = () => {
         
         const response = await axios.post('/api/applications', formDataToSend, {
           headers: { 
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+            'Content-Type': 'multipart/form-data'
+          },
+          timeout: 30000
         });
         toast.success('Application submitted successfully!');
         navigate(`/application/${response.data._id}`);
       } else {
         // Submit without files (regular JSON)
+        console.log('Submitting form data:', formData);
         const response = await axios.post('/api/applications/simple', formData, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-          }
+          timeout: 30000
         });
         toast.success('Application submitted successfully!');
         navigate(`/application/${response.data._id}`);
       }
     } catch (error) {
       console.error('Frontend submission error:', error);
-      console.error('Error response:', error.response);
-      toast.error(error.response?.data?.message || 'Failed to submit application');
+      
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        toast.error('Server is currently unavailable. Please try again in a few minutes.');
+      } else if (error.code === 'ECONNABORTED') {
+        toast.error('Request timeout. Please check your connection and try again.');
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to submit application');
+      }
     } finally {
       setLoading(false);
     }
