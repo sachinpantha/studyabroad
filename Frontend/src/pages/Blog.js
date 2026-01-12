@@ -110,7 +110,10 @@ const Blog = () => {
             )}
 
             <div className="prose max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: selectedBlog.content }} />
+              <div 
+                className="whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: selectedBlog.content.replace(/\n/g, '<br>') }} 
+              />
             </div>
 
             {selectedBlog.tags && selectedBlog.tags.length > 0 && (
