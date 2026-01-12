@@ -8,105 +8,145 @@ const router = express.Router();
 // Create application without files
 router.post('/simple', auth, async (req, res) => {
   try {
-    console.log('Simple application request:', req.body);
+    console.log('=== SIMPLE APPLICATION DEBUG ===');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    console.log('User ID:', req.user._id);
+    
+    // Validate required fields
+    const { personalInfo, academicInfo, preferredCourse, intake } = req.body;
+    
+    if (!personalInfo || !personalInfo.fullName) {
+      return res.status(400).json({ success: false, message: 'Personal info is required' });
+    }
+    if (!academicInfo || !academicInfo.highestQualification) {
+      return res.status(400).json({ success: false, message: 'Academic info is required' });
+    }
+    if (!preferredCourse) {
+      return res.status(400).json({ success: false, message: 'Course is required' });
+    }
+    if (!intake) {
+      return res.status(400).json({ success: false, message: 'Intake is required' });
+    }
     
     const application = new Application({
       userId: req.user._id,
-      personalInfo: req.body.personalInfo,
-      academicInfo: req.body.academicInfo,
-      course: req.body.preferredCourse,
-      intake: req.body.intake,
-      customUniversity: req.body.customUniversityName,
+      personalInfo: {
+        fullName: personalInfo.fullName,
+        dateOfBirth: personalInfo.dateOfBirth,
+        nationality: personalInfo.nationality,
+        passportNumber: personalInfo.passportNumber
+      },
+      academicInfo: {
+        highestQualification: academicInfo.highestQualification,
+        institution: academicInfo.institution,
+        gpa: parseFloat(academicInfo.gpa),
+        graduationYear: parseInt(academicInfo.graduationYear)
+      },
+      course: preferredCourse,
+      intake: intake,
+      customUniversity: req.body.customUniversityName || 'General Application',
       documents: []
     });
     
+    console.log('Application data before save:', JSON.stringify(application.toObject(), null, 2));
+    
     await application.save();
-    res.status(201).json(application);
+    console.log('Application saved successfully');
+    
+    res.status(201).json({ success: true, data: application });
   } catch (error) {
-    console.error('Simple application creation error:', error);
-    res.status(400).json({ message: error.message });
+    console.error('=== APPLICATION ERROR ===');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ success: false, message: `Validation failed: ${validationErrors.join(', ')}` });
+    }
+    
+    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 });
 
-// Create application
-router.post('/', auth, upload.fields([
-  { name: 'transcripts', maxCount: 1 },
-  { name: 'passport', maxCount: 1 },
-  { name: 'citizenship', maxCount: 1 },
-  { name: 'englishTest', maxCount: 1 },
-  { name: 'sop', maxCount: 1 },
-  { name: 'cv', maxCount: 1 }
-]), async (req, res) => {
-  try {
-    let applicationData;
-    if (req.body.applicationData) {
-      applicationData = JSON.parse(req.body.applicationData);
-    } else {
-      applicationData = req.body;
+// Create application with files
+router.post('/', auth, (req, res) => {
+  upload.fields([
+    { name: 'transcripts', maxCount: 1 },
+    { name: 'passport', maxCount: 1 },
+    { name: 'citizenship', maxCount: 1 },
+    { name: 'englishTest', maxCount: 1 },
+    { name: 'sop', maxCount: 1 },
+    { name: 'cv', maxCount: 1 }
+  ])(req, res, async (err) => {
+    try {
+      console.log('=== FILE UPLOAD DEBUG ===');
+      console.log('Request body:', req.body);
+      console.log('Request files:', req.files);
+      console.log('Upload error:', err);
+      
+      if (err) {
+        console.error('Multer error:', err);
+        return res.status(400).json({ success: false, message: `File upload error: ${err.message}` });
+      }
+      
+      let applicationData;
+      try {
+        applicationData = req.body.applicationData ? JSON.parse(req.body.applicationData) : req.body;
+      } catch (parseError) {
+        return res.status(400).json({ success: false, message: 'Invalid JSON in applicationData' });
+      }
+      
+      const course = applicationData.course || applicationData.preferredCourse;
+      const intake = applicationData.intake;
+      
+      if (!course) {
+        return res.status(400).json({ success: false, message: 'Course is required' });
+      }
+      if (!intake) {
+        return res.status(400).json({ success: false, message: 'Intake is required' });
+      }
+      
+      const documents = [];
+      if (req.files && Object.keys(req.files).length > 0) {
+        Object.keys(req.files).forEach(key => {
+          if (req.files[key] && req.files[key][0]) {
+            documents.push({
+              name: key,
+              path: req.files[key][0].path,
+              cloudinaryUrl: req.files[key][0].path,
+              originalName: req.files[key][0].originalname
+            });
+          }
+        });
+      }
+      
+      const appData = {
+        userId: req.user._id,
+        personalInfo: applicationData.personalInfo,
+        academicInfo: applicationData.academicInfo,
+        course: course,
+        intake: intake,
+        customUniversity: applicationData.customUniversityName || 'General Application',
+        documents
+      };
+      
+      const application = new Application(appData);
+      await application.save();
+      
+      res.status(201).json({ success: true, data: application });
+    } catch (error) {
+      console.error('=== FILE APPLICATION ERROR ===');
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
+      if (error.name === 'ValidationError') {
+        const validationErrors = Object.values(error.errors).map(err => err.message);
+        return res.status(400).json({ success: false, message: `Validation failed: ${validationErrors.join(', ')}` });
+      }
+      
+      res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
     }
-    
-    // Validate required fields
-    console.log('Received applicationData:', applicationData);
-    
-    // Map preferredCourse to course if it exists
-    const course = applicationData.course || applicationData.preferredCourse;
-    const intake = applicationData.intake;
-    
-    console.log('Course value:', course);
-    console.log('Intake value:', intake);
-    console.log('UniversityId:', applicationData.universityId);
-    console.log('CustomUniversityName:', applicationData.customUniversityName);
-    
-    if (!course || course.trim() === '') {
-      return res.status(400).json({ message: 'Course is required' });
-    }
-    if (!intake || intake.trim() === '') {
-      return res.status(400).json({ message: 'Intake is required' });
-    }
-    if (!applicationData.universityId && (!applicationData.customUniversityName || applicationData.customUniversityName.trim() === '')) {
-      return res.status(400).json({ message: 'University selection is required' });
-    }
-    
-    const documents = [];
-    if (req.files && Object.keys(req.files).length > 0) {
-      Object.keys(req.files).forEach(key => {
-        if (req.files[key] && req.files[key][0]) {
-          documents.push({
-            name: key,
-            path: req.files[key][0].path,
-            cloudinaryUrl: req.files[key][0].path,
-            originalName: req.files[key][0].originalname
-          });
-        }
-      });
-    }
-    
-    // Prepare application data
-    const appData = {
-      userId: req.user._id,
-      ...applicationData,
-      course: course, // Use mapped course value
-      documents
-    };
-    
-    // Handle custom university case
-    if (!applicationData.universityId && applicationData.customUniversityName) {
-      // Create a temporary universityId or handle custom university
-      appData.customUniversity = applicationData.customUniversityName;
-      // Set universityId to null for custom universities
-      delete appData.universityId;
-    }
-    
-    const application = new Application(appData);
-    await application.save();
-    res.status(201).json(application);
-  } catch (error) {
-    console.error('Backend application creation error:', error);
-    console.error('Error stack:', error.stack);
-    console.error('Request body:', req.body);
-    console.error('Request files:', req.files);
-    res.status(500).json({ message: error.message || 'Server error' });
-  }
+  });
 });
 
 // Get user applications

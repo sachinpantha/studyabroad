@@ -32,37 +32,13 @@ const Apply = () => {
     setLoading(true);
     
     try {
-      // Check if any files are selected
-      const hasFiles = Object.values(documents).some(file => file instanceof File);
-      
-      if (hasFiles) {
-        // Submit with files
-        const formDataToSend = new FormData();
-        formDataToSend.append('applicationData', JSON.stringify(formData));
-        
-        Object.keys(documents).forEach(key => {
-          if (documents[key] && documents[key] instanceof File) {
-            formDataToSend.append(key, documents[key]);
-          }
-        });
-        
-        const response = await axios.post('/api/applications', formDataToSend, {
-          headers: { 
-            'Content-Type': 'multipart/form-data'
-          },
-          timeout: 30000
-        });
-        toast.success('Application submitted successfully!');
-        navigate(`/application/${response.data._id}`);
-      } else {
-        // Submit without files (regular JSON)
-        console.log('Submitting form data:', formData);
-        const response = await axios.post('/api/applications/simple', formData, {
-          timeout: 30000
-        });
-        toast.success('Application submitted successfully!');
-        navigate(`/application/${response.data._id}`);
-      }
+      // Always use simple route for now
+      console.log('Submitting form data:', formData);
+      const response = await axios.post('/api/applications/simple', formData, {
+        timeout: 30000
+      });
+      toast.success('Application submitted successfully!');
+      navigate(`/application/${response.data._id}`);
     } catch (error) {
       console.error('Frontend submission error:', error);
       
@@ -71,7 +47,7 @@ const Apply = () => {
       } else if (error.code === 'ECONNABORTED') {
         toast.error('Request timeout. Please check your connection and try again.');
       } else {
-        toast.error(error.response?.data?.message || 'Failed to submit application');
+        toast.error(error.response?.data?.message || error.message || 'Failed to submit application');
       }
     } finally {
       setLoading(false);
