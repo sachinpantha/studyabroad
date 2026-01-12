@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AnimatedCounter from '../components/AnimatedCounter';
 import Testimonials from '../components/Testimonials';
 
-const Home = () => {
+const Home = React.memo(() => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [searchForm, setSearchForm] = useState({
@@ -27,8 +27,9 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section with Guided Search */}
-      <section className="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
+      <section className="relative bg-blue-900 text-white py-20">
+        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{backgroundImage: "url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')"}}></div>
+        <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6" data-aos="fade-up">
             Study in India from Nepal
           </h1>
@@ -195,7 +196,12 @@ const Home = () => {
             ].map((uni, index) => (
               <div key={index} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden">
                 <div className="h-48 bg-gray-100 flex items-center justify-center p-4">
-                  <img src={uni.logo} alt={uni.name} className="max-h-full max-w-full object-contain" />
+                  <img 
+                    src={uni.logo} 
+                    alt={uni.name} 
+                    className="max-h-full max-w-full object-contain" 
+                    loading="lazy"
+                  />
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-semibold mb-2">{uni.name}</h3>
@@ -329,6 +335,6 @@ const Home = () => {
       </footer>
     </div>
   );
-};
+});
 
 export default Home;

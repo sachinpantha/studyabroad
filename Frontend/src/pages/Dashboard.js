@@ -17,7 +17,9 @@ const Dashboard = () => {
 
   const fetchApplications = async () => {
     try {
-      const response = await axios.get('/api/applications/my');
+      const response = await axios.get('/api/applications/my', {
+        headers: { 'Cache-Control': 'max-age=300' }
+      });
       setApplications(response.data);
     } catch (error) {
       console.error('Error fetching applications:', error);

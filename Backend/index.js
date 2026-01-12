@@ -1,17 +1,22 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const compression = require('compression');
 const path = require('path');
 require('dotenv').config();
 
 const app = express();
+
+// Compression middleware
+app.use(compression());
 
 // Middleware
 app.use(cors({
   origin: ['http://localhost:3000', 'https://studyabroad-pi.vercel.app'],
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URI)
