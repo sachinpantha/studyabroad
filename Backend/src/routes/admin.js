@@ -83,6 +83,38 @@ router.delete('/users/:id', auth, adminAuth, async (req, res) => {
       return res.status(403).json({ message: 'Cannot delete admin user' });
     }
     
+    // Delete user's documents from Cloudinary
+    const cloudinary = require('cloudinary').v2;
+    if (user.profile?.documents?.length > 0) {
+      for (const doc of user.profile.documents) {
+        if (doc.cloudinaryUrl) {
+          const publicId = doc.cloudinaryUrl.split('/').slice(-2).join('/').split('.')[0];
+          try {
+            await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+          } catch (err) {
+            console.error('Error deleting document:', err);
+          }
+        }
+      }
+    }
+    
+    // Delete application documents
+    const applications = await Application.find({ userId: req.params.id });
+    for (const app of applications) {
+      if (app.documents?.length > 0) {
+        for (const doc of app.documents) {
+          if (doc.cloudinaryUrl) {
+            const publicId = doc.cloudinaryUrl.split('/').slice(-2).join('/').split('.')[0];
+            try {
+              await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+            } catch (err) {
+              console.error('Error deleting document:', err);
+            }
+          }
+        }
+      }
+    }
+    
     await Application.deleteMany({ userId: req.params.id });
     await User.findByIdAndDelete(req.params.id);
     
@@ -98,6 +130,21 @@ router.delete('/applications/:id', auth, adminAuth, async (req, res) => {
     const application = await Application.findById(req.params.id);
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
+    }
+    
+    // Delete application documents from Cloudinary
+    const cloudinary = require('cloudinary').v2;
+    if (application.documents?.length > 0) {
+      for (const doc of application.documents) {
+        if (doc.cloudinaryUrl && doc.source === 'upload') {
+          const publicId = doc.cloudinaryUrl.split('/').slice(-2).join('/').split('.')[0];
+          try {
+            await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+          } catch (err) {
+            console.error('Error deleting document:', err);
+          }
+        }
+      }
     }
     
     await Application.findByIdAndDelete(req.params.id);

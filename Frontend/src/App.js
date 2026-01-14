@@ -23,6 +23,9 @@ import ApplicationDetails from './pages/ApplicationDetails';
 import EnhancedAdminPanel from './pages/EnhancedAdminPanel';
 import Notices from './pages/Notices';
 
+import ProfileKYC from './pages/ProfileKYC';
+import FAQ from './pages/FAQ';
+
 function App() {
   useEffect(() => {
     AOS.init({
@@ -51,6 +54,11 @@ function App() {
                 <Profile />
               </ProtectedRoute>
             } />
+            <Route path="/profile/kyc" element={
+              <ProtectedRoute>
+                <ProfileKYC />
+              </ProtectedRoute>
+            } />
             <Route path="/universities" element={
               <ProtectedRoute>
                 <Universities />
@@ -73,6 +81,7 @@ function App() {
             } />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<Blog />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route path="/apply" element={
               <ProtectedRoute>
                 <Apply />

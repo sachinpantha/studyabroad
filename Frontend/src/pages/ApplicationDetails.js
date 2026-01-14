@@ -37,11 +37,11 @@ const ApplicationDetails = () => {
     }
 
     try {
-      const response = await axios.post(`/api/applications/${id}/documents`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await axios.post(`/api/applications/${id}/documents`, formData);
       setApplication(response.data.data || response.data);
       toast.success('Documents uploaded successfully!');
+      // Clear the file input
+      e.target.value = '';
     } catch (error) {
       console.error('Document upload error:', error);
       toast.error(error.response?.data?.message || 'Failed to upload documents');
@@ -133,12 +133,12 @@ const ApplicationDetails = () => {
             <h2 className="text-2xl font-semibold mb-4">Study Preferences</h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <span className="font-medium">Preferred Country:</span>
-                <p className="text-gray-600">{application.preferredCountry}</p>
+                <span className="font-medium">Preferred Course:</span>
+                <p className="text-gray-600">{application.course}</p>
               </div>
               <div>
-                <span className="font-medium">Preferred Course:</span>
-                <p className="text-gray-600">{application.preferredCourse}</p>
+                <span className="font-medium">Intake:</span>
+                <p className="text-gray-600">{application.intake}</p>
               </div>
             </div>
           </div>
@@ -147,27 +147,18 @@ const ApplicationDetails = () => {
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
             <h2 className="text-2xl font-semibold mb-4">Documents</h2>
             
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Documents (PDF, DOC, DOCX, Images)
-              </label>
-              <input
-                type="file"
-                multiple
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                onChange={handleFileUpload}
-                disabled={uploading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {uploading && <p className="text-blue-600 mt-2">Uploading...</p>}
-            </div>
-
             {application.documents.length > 0 ? (
               <div className="space-y-2">
+                <div className="flex items-center mb-4">
+                  <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-green-600 font-medium">Documents uploaded successfully</span>
+                </div>
                 <h3 className="font-medium">Uploaded Documents:</h3>
                 {application.documents.map((doc, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                    <span>{doc.name}</span>
+                    <span className="capitalize">{doc.name}</span>
                     <span className="text-sm text-gray-500">
                       {new Date(doc.uploadDate).toLocaleDateString()}
                     </span>

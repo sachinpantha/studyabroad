@@ -23,7 +23,8 @@ const applicationSchema = new mongoose.Schema({
     path: String,
     cloudinaryUrl: String,
     originalName: String,
-    uploadDate: { type: Date, default: Date.now }
+    uploadDate: { type: Date, default: Date.now },
+    source: { type: String, enum: ['kyc', 'upload'], default: 'upload' }
   }],
   status: { 
     type: String, 

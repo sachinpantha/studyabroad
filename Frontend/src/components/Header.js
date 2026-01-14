@@ -34,6 +34,9 @@ const Header = () => {
                   <Link to="/notices" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                     Notices
                   </Link>
+                  <Link to="/faq" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                    FAQ
+                  </Link>
                   <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                     Blog
                   </Link>
@@ -60,6 +63,9 @@ const Header = () => {
             </>
           ) : (
             <>
+              <Link to="/faq" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                FAQ
+              </Link>
               <Link to="/blog" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Blog
               </Link>
@@ -121,6 +127,13 @@ const Header = () => {
                       className="block text-gray-700 hover:text-blue-600 font-medium py-3 px-2 rounded-lg hover:bg-gray-50 transition-all"
                     >
                       Notices
+                    </Link>
+                    <Link 
+                      to="/faq" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block text-gray-700 hover:text-blue-600 font-medium py-3 px-2 rounded-lg hover:bg-gray-50 transition-all"
+                    >
+                      FAQ
                     </Link>
                     <Link 
                       to="/blog" 

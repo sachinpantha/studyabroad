@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../utils/axios';
 import { toast } from 'react-toastify';
-import DocumentPreview from '../components/DocumentPreview';
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://studyabroad-krny.onrender.com'
@@ -17,7 +16,6 @@ const EnhancedAdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [previewDocument, setPreviewDocument] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ show: false, userId: null, userName: '' });
   const [notices, setNotices] = useState([]);
   const [noticeForm, setNoticeForm] = useState({ title: '', content: '' });
@@ -28,6 +26,7 @@ const EnhancedAdminPanel = () => {
   const [deleteBlogModal, setDeleteBlogModal] = useState({ show: false, blogId: null, blogTitle: '' });
   const [deleteApplicationModal, setDeleteApplicationModal] = useState({ show: false, appId: null, appName: '' });
   const [universityForm, setUniversityForm] = useState({ name: '', country: '', city: '' });
+  const [pdfPreview, setPdfPreview] = useState(null);
 
   // Blog form state
   const [blogForm, setBlogForm] = useState({
@@ -808,6 +807,30 @@ const EnhancedAdminPanel = () => {
         </div>
       </div>
 
+      {/* PDF Preview Modal */}
+      {pdfPreview && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-4">
+          <div className="bg-white rounded-lg w-full max-w-6xl h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-semibold">Document Preview</h3>
+              <button
+                onClick={() => setPdfPreview(null)}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <div className="flex-1">
+              <iframe
+                src={`https://docs.google.com/viewer?url=${encodeURIComponent(pdfPreview)}&embedded=true`}
+                className="w-full h-full border-0"
+                title="Document Preview"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Delete Application Confirmation Modal */}
       {deleteApplicationModal.show && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -969,17 +992,32 @@ const EnhancedAdminPanel = () => {
                   <h3 className="font-semibold mb-3">Documents ({selectedApplication.documents?.length || 0})</h3>
                   <div className="space-y-2">
                     {selectedApplication.documents?.length > 0 ? (
-                      selectedApplication.documents.map((doc, index) => (
-                        <div key={index} className="flex justify-between items-center p-2 bg-white rounded border">
-                          <span className="text-sm">{doc.originalName || doc.name}</span>
-                          <button
-                            onClick={() => setPreviewDocument(doc)}
-                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                          >
-                            Preview
-                          </button>
-                        </div>
-                      ))
+                      selectedApplication.documents.map((doc, index) => {
+                        const url = doc.cloudinaryUrl || doc.path;
+                        const isImage = url?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+                        return (
+                          <div key={index} className="flex justify-between items-center p-2 bg-white rounded border">
+                            <span className="text-sm capitalize">{doc.name}</span>
+                            {isImage ? (
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                              >
+                                Preview
+                              </a>
+                            ) : (
+                              <button
+                                onClick={() => setPdfPreview(url)}
+                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                              >
+                                Preview
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })
                     ) : (
                       <p className="text-gray-500 text-sm">No documents uploaded</p>
                     )}
@@ -1000,13 +1038,6 @@ const EnhancedAdminPanel = () => {
         </div>
       )}
 
-      {/* Document Preview Modal */}
-      {previewDocument && (
-        <DocumentPreview
-          document={previewDocument}
-          onClose={() => setPreviewDocument(null)}
-        />
-      )}
     </div>
   );
 };

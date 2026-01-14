@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
-import { toast } from 'react-toastify';
 
 const Dashboard = () => {
   const [applications, setApplications] = useState([]);
@@ -31,11 +30,10 @@ const Dashboard = () => {
   const deleteApplication = async (appId) => {
     try {
       await axios.delete(`/api/applications/${appId}`);
-      toast.success('Application deleted successfully');
       setDeleteModal({ show: false, appId: null, appName: '' });
       fetchApplications();
     } catch (error) {
-      toast.error('Failed to delete application');
+      console.error('Failed to delete application:', error);
     }
   };
 
@@ -86,10 +84,15 @@ const Dashboard = () => {
           <p className="text-gray-600">Manage your study abroad applications</p>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <Link to="/apply" className="bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 text-center">
             <h3 className="text-xl font-semibold mb-2">Apply Now</h3>
             <p>Start new application</p>
+          </Link>
+          
+          <Link to="/profile/kyc" className="bg-green-600 text-white p-6 rounded-lg hover:bg-green-700 text-center">
+            <h3 className="text-xl font-semibold mb-2">Complete KYC</h3>
+            <p>Verify your profile</p>
           </Link>
           
           <div className="bg-white p-6 rounded-lg shadow-md text-center">

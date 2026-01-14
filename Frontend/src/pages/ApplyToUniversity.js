@@ -13,6 +13,7 @@ const ApplyToUniversity = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [customUniversity, setCustomUniversity] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [uploadedDocs, setUploadedDocs] = useState([]);
   const [formData, setFormData] = useState({
     personalInfo: {
       fullName: '',
@@ -38,7 +39,22 @@ const ApplyToUniversity = () => {
       setSelectedUniversity(universityId);
     }
     fetchUniversities();
+    fetchUserProfile();
   }, [universityId]);
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await axios.get('/api/profile');
+      console.log('Profile response:', response.data);
+      const docs = response.data.profile?.documents || [];
+      console.log('Documents:', docs);
+      const docTypes = docs.map(d => d.type);
+      console.log('Document types:', docTypes);
+      setUploadedDocs(docTypes);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
 
   const fetchUniversity = async () => {
     try {
@@ -108,15 +124,16 @@ const ApplyToUniversity = () => {
 
     try {
       const applicationData = {
-        ...formData,
-        universityId: selectedUniversity || null,
+        personalInfo: formData.personalInfo,
+        academicInfo: formData.academicInfo,
+        preferredCourse: formData.course,
+        intake: formData.intake,
         customUniversityName: showCustomInput ? customUniversity : null
       };
 
       const formDataToSend = new FormData();
       formDataToSend.append('applicationData', JSON.stringify(applicationData));
 
-      // Append documents
       Object.keys(documents).forEach(key => {
         if (documents[key]) {
           formDataToSend.append(key, documents[key]);
@@ -367,15 +384,30 @@ const ApplyToUniversity = () => {
                 { key: 'sop', label: 'Statement of Purpose' },
                 { key: 'cv', label: 'CV/Resume' }
               ].map(({ key, label }) => (
-                <FileUpload
-                  key={key}
-                  label={label}
-                  name={key}
-                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                  onChange={handleFileChange}
-                  uploaded={!!documents[key]}
-                  fileName={documents[key]?.name}
-                />
+                <div key={key}>
+                  {uploadedDocs.includes(key) ? (
+                    <div className="border-2 border-green-200 bg-green-50 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-sm font-medium text-gray-900">{label}</span>
+                        </div>
+                        <span className="text-xs text-green-600 font-medium">Already Uploaded</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <FileUpload
+                      label={label}
+                      name={key}
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                      onChange={handleFileChange}
+                      uploaded={!!documents[key]}
+                      fileName={documents[key]?.name}
+                    />
+                  )}
+                </div>
               ))}
             </div>
           </div>

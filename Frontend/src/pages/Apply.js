@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
 import { toast } from 'react-toastify';
 import FileUpload from '../components/FileUpload';
 
 const Apply = () => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     personalInfo: {
       fullName: '',
@@ -25,7 +27,41 @@ const Apply = () => {
   });
   const [documents, setDocuments] = useState({});
   const [loading, setLoading] = useState(false);
+  const [kycData, setKycData] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchKYCData();
+  }, []);
+
+  const fetchKYCData = async () => {
+    try {
+      const response = await axios.get('/api/profile/status');
+      if (response.data.profile) {
+        const profile = response.data.profile;
+        setKycData(profile);
+        
+        // Auto-fill form with KYC data
+        setFormData(prev => ({
+          ...prev,
+          personalInfo: {
+            fullName: user?.name || '',
+            dateOfBirth: profile.dateOfBirth?.split('T')[0] || '',
+            nationality: profile.nationality || '',
+            passportNumber: profile.passportNumber || ''
+          },
+          academicInfo: {
+            highestQualification: profile.academic?.highestQualification || '',
+            institution: profile.academic?.institution || '',
+            gpa: profile.academic?.gpa || '',
+            graduationYear: profile.academic?.graduationYear || ''
+          }
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching KYC data:', error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,15 +120,25 @@ const Apply = () => {
             {/* Personal Information */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-2xl font-semibold mb-6">Personal Information</h2>
+              {kycData && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-blue-800 text-sm">
+                    ✓ Information auto-filled from your KYC profile. These fields cannot be edited.
+                  </p>
+                </div>
+              )}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                   <input
                     type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly={!!kycData}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      kycData ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     value={formData.personalInfo.fullName}
-                    onChange={(e) => handleInputChange('personalInfo', 'fullName', e.target.value)}
+                    onChange={(e) => !kycData && handleInputChange('personalInfo', 'fullName', e.target.value)}
                   />
                 </div>
                 <div>
@@ -100,9 +146,12 @@ const Apply = () => {
                   <input
                     type="date"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly={!!kycData}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      kycData ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     value={formData.personalInfo.dateOfBirth}
-                    onChange={(e) => handleInputChange('personalInfo', 'dateOfBirth', e.target.value)}
+                    onChange={(e) => !kycData && handleInputChange('personalInfo', 'dateOfBirth', e.target.value)}
                   />
                 </div>
                 <div>
@@ -110,9 +159,12 @@ const Apply = () => {
                   <input
                     type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly={!!kycData}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      kycData ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     value={formData.personalInfo.nationality}
-                    onChange={(e) => handleInputChange('personalInfo', 'nationality', e.target.value)}
+                    onChange={(e) => !kycData && handleInputChange('personalInfo', 'nationality', e.target.value)}
                   />
                 </div>
                 <div>
@@ -120,9 +172,12 @@ const Apply = () => {
                   <input
                     type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly={!!kycData}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      kycData ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     value={formData.personalInfo.passportNumber}
-                    onChange={(e) => handleInputChange('personalInfo', 'passportNumber', e.target.value)}
+                    onChange={(e) => !kycData && handleInputChange('personalInfo', 'passportNumber', e.target.value)}
                   />
                 </div>
               </div>
@@ -131,17 +186,28 @@ const Apply = () => {
             {/* Academic Information */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-2xl font-semibold mb-6">Academic Information</h2>
+              {kycData && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-blue-800 text-sm">
+                    ✓ Information auto-filled from your KYC profile. These fields cannot be edited.
+                  </p>
+                </div>
+              )}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Highest Qualification</label>
                   <select
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    disabled={!!kycData}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      kycData ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     value={formData.academicInfo.highestQualification}
-                    onChange={(e) => handleInputChange('academicInfo', 'highestQualification', e.target.value)}
+                    onChange={(e) => !kycData && handleInputChange('academicInfo', 'highestQualification', e.target.value)}
                   >
                     <option value="">Select Qualification</option>
                     <option value="High School">High School</option>
+                    <option value="10+2">10+2</option>
                     <option value="Bachelor's">Bachelor's Degree</option>
                     <option value="Master's">Master's Degree</option>
                     <option value="PhD">PhD</option>
@@ -152,20 +218,25 @@ const Apply = () => {
                   <input
                     type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly={!!kycData}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      kycData ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     value={formData.academicInfo.institution}
-                    onChange={(e) => handleInputChange('academicInfo', 'institution', e.target.value)}
+                    onChange={(e) => !kycData && handleInputChange('academicInfo', 'institution', e.target.value)}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">GPA/Percentage</label>
                   <input
-                    type="number"
-                    step="0.01"
+                    type="text"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly={!!kycData}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      kycData ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     value={formData.academicInfo.gpa}
-                    onChange={(e) => handleInputChange('academicInfo', 'gpa', e.target.value)}
+                    onChange={(e) => !kycData && handleInputChange('academicInfo', 'gpa', e.target.value)}
                   />
                 </div>
                 <div>
@@ -173,17 +244,49 @@ const Apply = () => {
                   <input
                     type="number"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    readOnly={!!kycData}
+                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      kycData ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     value={formData.academicInfo.graduationYear}
-                    onChange={(e) => handleInputChange('academicInfo', 'graduationYear', e.target.value)}
+                    onChange={(e) => !kycData && handleInputChange('academicInfo', 'graduationYear', e.target.value)}
                   />
                 </div>
               </div>
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-2xl font-semibold mb-6">Documents (Optional)</h2>
-              <p className="text-gray-600 mb-6">You can upload documents now or later from your dashboard.</p>
+              <h2 className="text-2xl font-semibold mb-6">Documents</h2>
+              {kycData?.documents?.length > 0 ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                  <p className="text-green-800 text-sm">
+                    ✓ Documents auto-loaded from your KYC profile. You can upload additional documents if needed.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-600 mb-6">You can upload documents now or later from your dashboard.</p>
+              )}
+              
+              {/* Show KYC Documents */}
+              {kycData?.documents?.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium mb-3">Documents from KYC Profile:</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {kycData.documents.map((doc, index) => (
+                      <div key={index} className="border border-green-200 rounded-lg p-3 bg-green-50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-sm capitalize">{doc.type?.replace('_', ' ') || 'Document'}</p>
+                            <p className="text-xs text-gray-600">{doc.name}</p>
+                          </div>
+                          <span className="text-green-600 text-xs">✓ Verified</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               <div className="grid md:grid-cols-2 gap-6">
                 <FileUpload
                   label="Academic Transcripts"
@@ -235,6 +338,7 @@ const Apply = () => {
                 />
               </div>
             </div>
+
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-2xl font-semibold mb-6">Study Preferences</h2>
               <div className="grid md:grid-cols-2 gap-6">

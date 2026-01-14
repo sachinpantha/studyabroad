@@ -32,6 +32,7 @@ app.use('/api/applications', require('./src/routes/applications'));
 app.use('/api/admin', require('./src/routes/admin'));
 app.use('/api/documents', require('./src/routes/documents'));
 app.use('/api/profile', require('./src/routes/profile'));
+app.use('/api/profile', require('./src/routes/profileKYC'));
 app.use('/api/universities', require('./src/routes/universities'));
 app.use('/api/blog', require('./src/routes/blog'));
 app.use('/api/notices', require('./src/routes/notices'));

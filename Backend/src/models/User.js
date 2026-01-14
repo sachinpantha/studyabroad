@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
       fieldOfStudy: String
     },
     documents: [{
-      type: { type: String, enum: ['passport', 'transcript', 'certificate', 'ielts', 'toefl', 'other'] },
+      type: { type: String, enum: ['passport', 'transcript', 'certificate', 'ielts', 'toefl', 'transcripts', 'englishTest', 'sop', 'cv', 'citizenship', 'other'] },
       name: String,
       path: String,
       cloudinaryUrl: String,
@@ -58,7 +58,7 @@ userSchema.methods.checkProfileCompletion = function() {
   });
   
   const hasDocuments = this.profile.documents && this.profile.documents.length > 0;
-  this.profile.profileComplete = hasRequired && hasDocuments;
+  this.profile.profileComplete = hasRequired;
   return this.profile.profileComplete;
 };
 

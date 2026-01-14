@@ -30,11 +30,11 @@ router.put('/', auth, async (req, res) => {
 // Upload document
 router.post('/documents', auth, upload.single('document'), async (req, res) => {
   try {
-    const { type } = req.body;
+    const { documentType } = req.body;
     const user = await User.findById(req.user.id);
     
     const document = {
-      type,
+      type: documentType,
       name: req.file.filename,
       path: req.file.path,
       cloudinaryUrl: req.file.path,

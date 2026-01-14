@@ -28,6 +28,21 @@ router.post('/simple', auth, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Intake is required' });
     }
     
+    // Get user's KYC documents
+    const User = require('../models/User');
+    const user = await User.findById(req.user._id);
+    const kycDocuments = user?.profile?.documents || [];
+    
+    // Copy KYC documents to application documents
+    const applicationDocuments = kycDocuments.map(doc => ({
+      name: doc.type,
+      path: doc.path || doc.cloudinaryUrl,
+      cloudinaryUrl: doc.cloudinaryUrl || doc.path,
+      originalName: doc.name,
+      uploadDate: new Date(),
+      source: 'kyc'
+    }));
+    
     const application = new Application({
       userId: req.user._id,
       personalInfo: {
@@ -45,7 +60,7 @@ router.post('/simple', auth, async (req, res) => {
       course: preferredCourse,
       intake: intake,
       customUniversity: req.body.customUniversityName || 'General Application',
-      documents: []
+      documents: applicationDocuments // Include KYC documents
     });
     
     console.log('Application data before save:', JSON.stringify(application.toObject(), null, 2));
@@ -131,7 +146,25 @@ router.post('/', auth, (req, res) => {
         });
       }
       
+      // Get user's KYC documents
+      const User = require('../models/User');
+      const user = await User.findById(req.user._id);
+      const kycDocuments = user?.profile?.documents || [];
+      
       const documents = [];
+      
+      // Add KYC documents first
+      kycDocuments.forEach(doc => {
+        documents.push({
+          name: doc.type,
+          path: doc.path || doc.cloudinaryUrl,
+          cloudinaryUrl: doc.cloudinaryUrl || doc.path,
+          originalName: doc.name,
+          source: 'kyc'
+        });
+      });
+      
+      // Add newly uploaded documents
       if (req.files) {
         Object.entries(req.files).forEach(([key, fileArray]) => {
           if (fileArray?.[0]) {
@@ -139,7 +172,8 @@ router.post('/', auth, (req, res) => {
               name: key,
               path: fileArray[0].path,
               cloudinaryUrl: fileArray[0].path,
-              originalName: fileArray[0].originalname
+              originalName: fileArray[0].originalname,
+              source: 'upload'
             });
           }
         });

@@ -7,12 +7,15 @@ const DocumentPreview = ({ document, onClose }) => {
   if (!document) return null;
 
   const getFileExtension = (filename) => {
-    return filename?.split('.').pop()?.toLowerCase() || '';
+    if (!filename) return '';
+    const parts = filename.split('.');
+    return parts.length > 1 ? parts.pop().toLowerCase() : '';
   };
 
   const isImage = (filename) => {
+    const ext = getFileExtension(filename);
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
-    return imageExtensions.includes(getFileExtension(filename));
+    return imageExtensions.includes(ext);
   };
 
   const isPDF = (filename) => {
@@ -21,30 +24,30 @@ const DocumentPreview = ({ document, onClose }) => {
 
   const getDocumentUrl = () => {
     if (document.cloudinaryUrl) {
-      // Check if it's a PDF and fix URL if needed
-      if (isPDF(document.originalName || document.name)) {
-        const url = document.cloudinaryUrl;
-        // If URL contains /image/upload/, replace with /raw/upload/
-        if (url.includes('/image/upload/')) {
-          return url.replace('/image/upload/', '/raw/upload/') + '.pdf';
-        }
-        return url;
+      const url = document.cloudinaryUrl;
+      const filename = document.originalName || document.name || '';
+      
+      // For PDFs on Cloudinary, convert to proper format
+      if (isPDF(filename) && url.includes('cloudinary.com')) {
+        // Replace /image/upload/ with /image/upload/fl_attachment/
+        return url.replace('/upload/', '/upload/fl_attachment/');
       }
-      return document.cloudinaryUrl;
+      return url;
     }
     const filename = document.path?.split('/').pop() || document.path;
     const token = localStorage.getItem('token');
     return `http://localhost:5000/api/documents/${filename}?token=${token}`;
   };
 
+  const documentUrl = getDocumentUrl();
+  const filename = document.originalName || document.name || 'Document';
+  const fileExt = getFileExtension(filename);
+
   const handleLoad = () => setLoading(false);
   const handleError = () => {
     setLoading(false);
     setError(true);
   };
-
-  const documentUrl = getDocumentUrl();
-  const filename = document.originalName || document.name || 'Document';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
@@ -102,7 +105,7 @@ const DocumentPreview = ({ document, onClose }) => {
 
               {isPDF(filename) && (
                 <iframe
-                  src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(documentUrl)}`}
+                  src={`${documentUrl}#toolbar=0`}
                   className="w-full h-full min-h-[500px] border-0"
                   onLoad={handleLoad}
                   onError={handleError}
@@ -117,7 +120,7 @@ const DocumentPreview = ({ document, onClose }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   <p className="text-lg mb-2">Preview not available</p>
-                  <p className="text-sm mb-4">File type: {getFileExtension(filename).toUpperCase()}</p>
+                  <p className="text-sm mb-4">File type: {fileExt.toUpperCase() || 'Unknown'}</p>
                   <a
                     href={documentUrl}
                     target="_blank"
@@ -135,7 +138,7 @@ const DocumentPreview = ({ document, onClose }) => {
         {/* Footer */}
         <div className="flex justify-between items-center p-4 border-t bg-gray-50">
           <div className="text-sm text-gray-600">
-            File type: {getFileExtension(filename).toUpperCase()}
+            File type: {fileExt.toUpperCase() || 'Unknown'}
           </div>
           <div className="flex gap-2">
             <a
