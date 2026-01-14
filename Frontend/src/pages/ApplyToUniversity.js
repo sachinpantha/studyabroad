@@ -45,12 +45,30 @@ const ApplyToUniversity = () => {
   const fetchUserProfile = async () => {
     try {
       const response = await axios.get('/api/profile');
-      console.log('Profile response:', response.data);
       const docs = response.data.profile?.documents || [];
-      console.log('Documents:', docs);
       const docTypes = docs.map(d => d.type);
-      console.log('Document types:', docTypes);
       setUploadedDocs(docTypes);
+      
+      // Pre-fill form with KYC data
+      if (response.data.profile) {
+        const profile = response.data.profile;
+        setFormData({
+          personalInfo: {
+            fullName: response.data.name || '',
+            dateOfBirth: profile.dateOfBirth?.split('T')[0] || '',
+            nationality: profile.nationality || '',
+            passportNumber: profile.passportNumber || ''
+          },
+          academicInfo: {
+            highestQualification: profile.academic?.highestQualification || '',
+            institution: profile.academic?.institution || '',
+            gpa: profile.academic?.gpa || '',
+            graduationYear: profile.academic?.graduationYear || ''
+          },
+          course: '',
+          intake: ''
+        });
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -240,9 +258,8 @@ const ApplyToUniversity = () => {
                   type="text"
                   name="personalInfo.fullName"
                   value={formData.personalInfo.fullName}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  readOnly
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
                 />
               </div>
               <div>
@@ -251,9 +268,8 @@ const ApplyToUniversity = () => {
                   type="date"
                   name="personalInfo.dateOfBirth"
                   value={formData.personalInfo.dateOfBirth}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  readOnly
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
                 />
               </div>
               <div>
@@ -262,9 +278,8 @@ const ApplyToUniversity = () => {
                   type="text"
                   name="personalInfo.nationality"
                   value={formData.personalInfo.nationality}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  readOnly
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
                 />
               </div>
               <div>
@@ -273,9 +288,8 @@ const ApplyToUniversity = () => {
                   type="text"
                   name="personalInfo.passportNumber"
                   value={formData.personalInfo.passportNumber}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  readOnly
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
                 />
               </div>
             </div>
@@ -287,54 +301,38 @@ const ApplyToUniversity = () => {
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Highest Qualification</label>
-                <select
-                  name="academicInfo.highestQualification"
+                <input
+                  type="text"
                   value={formData.academicInfo.highestQualification}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
-                >
-                  <option value="">Select Qualification</option>
-                  <option value="High School">High School</option>
-                  <option value="Bachelor's">Bachelor's Degree</option>
-                  <option value="Master's">Master's Degree</option>
-                  <option value="PhD">PhD</option>
-                </select>
+                  readOnly
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Institution</label>
                 <input
                   type="text"
-                  name="academicInfo.institution"
                   value={formData.academicInfo.institution}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  readOnly
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">GPA</label>
                 <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="4"
-                  name="academicInfo.gpa"
+                  type="text"
                   value={formData.academicInfo.gpa}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  readOnly
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
                 <input
-                  type="number"
-                  name="academicInfo.graduationYear"
+                  type="text"
                   value={formData.academicInfo.graduationYear}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  readOnly
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 cursor-not-allowed"
                 />
               </div>
             </div>

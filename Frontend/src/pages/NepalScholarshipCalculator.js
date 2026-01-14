@@ -170,32 +170,6 @@ const NepalScholarshipCalculator = () => {
           </div>
         </div>
 
-        {/* Conversion Guide */}
-        <div className="bg-blue-50 rounded-lg p-6 mb-8">
-          <h3 className="text-lg font-semibold text-blue-900 mb-4">Nepal to India Grade Conversion Guide</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <h4 className="font-medium mb-2 text-blue-800">Percentage to GPA:</h4>
-              <ul className="space-y-1 text-blue-700">
-                <li>90%+ = 4.0 GPA (Distinction)</li>
-                <li>85-89% = 3.7 GPA (First Division)</li>
-                <li>80-84% = 3.4 GPA (First Division)</li>
-                <li>75-79% = 3.0 GPA (Second Division)</li>
-                <li>70-74% = 2.7 GPA (Second Division)</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2 text-blue-800">Scholarship Tiers:</h4>
-              <ul className="space-y-1 text-blue-700">
-                <li>3.8+ GPA = Up to 100% scholarship</li>
-                <li>3.5+ GPA = Up to 75% scholarship</li>
-                <li>3.0+ GPA = Up to 50% scholarship</li>
-                <li>2.5+ GPA = Up to 25% scholarship</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
         {/* Results */}
         {eligibleUniversities.length > 0 && (
           <div>
@@ -205,45 +179,37 @@ const NepalScholarshipCalculator = () => {
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {eligibleUniversities.map((university) => (
-                <div key={university._id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+                <div key={university._id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                  <div className="h-48 bg-gray-100 flex items-center justify-center p-4">
+                    {university.logo ? (
+                      <img src={university.logo} alt={university.name} className="max-h-full max-w-full object-contain" />
+                    ) : (
+                      <div className="text-center">
+                        <h3 className="text-2xl font-bold text-gray-700">{university.name}</h3>
+                        <p className="text-gray-500 mt-2">{university.country}</p>
+                      </div>
+                    )}
+                  </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{university.name}</h3>
-                    <p className="text-gray-600 mb-4">{university.country}</p>
-                    
-                    <div className="space-y-3">
-                      {university.scholarships.map((scholarship, index) => (
-                        <div key={index} className="border-l-4 border-green-500 pl-4">
-                          <h4 className="font-medium text-gray-900">{scholarship.name}</h4>
-                          <div className="text-sm text-gray-600">
-                            <p>Amount: {formatINR(scholarship.amount)}</p>
-                            <p className="text-green-600">NPR: {formatNPR(scholarship.amount)}</p>
-                            <p>Coverage: {scholarship.percentage}%</p>
-                            <p>Min Required: {scholarship.minGPA} GPA ({convertGPAToPercentage(scholarship.minGPA)}%)</p>
-                            <p className="text-xs mt-1 italic">{scholarship.criteria}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-gray-200">
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm text-gray-600">
-                          Total Savings: 
-                          <div className="font-semibold text-green-600">
-                            {formatINR(university.scholarships.reduce((sum, s) => sum + s.amount, 0))}
-                          </div>
-                          <div className="text-xs text-green-500">
-                            {formatNPR(university.scholarships.reduce((sum, s) => sum + s.amount, 0))}
-                          </div>
-                        </div>
-                        <Link
-                          to={`/apply/${university._id}`}
-                          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
-                        >
-                          Apply Now
-                        </Link>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{university.name}</h3>
+                    <p className="text-sm text-gray-600 mb-4">{university.country}</p>
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-600">Scholarship</span>
+                        <span className="text-2xl font-bold text-green-600">
+                          {university.scholarships[0]?.percentage}%
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Save up to {formatINR(university.scholarships.reduce((sum, s) => sum + s.amount, 0))}
                       </div>
                     </div>
+                    <Link
+                      to={`/apply/${university._id}`}
+                      className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white text-center py-3 rounded-lg hover:from-green-600 hover:to-green-700 font-medium"
+                    >
+                      Apply Now
+                    </Link>
                   </div>
                 </div>
               ))}

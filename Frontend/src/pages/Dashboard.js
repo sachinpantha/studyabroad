@@ -168,20 +168,20 @@ const Dashboard = () => {
                         <div className="flex gap-2">
                           <Link 
                             to={`/application/${app._id}`}
-                            className="text-blue-600 hover:underline text-sm"
+                            className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
                           >
                             View
                           </Link>
                           <button
                             onClick={() => confirmDelete(app._id, app.course || app.preferredCourse)}
-                            className="text-red-600 hover:underline text-sm"
+                            className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
                           >
                             Delete
                           </button>
                         </div>
                       </td>
                     </tr>
-                  ))}}
+                  ))}
                 </tbody>
               </table>
             </div>
