@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { toast } from 'react-toastify';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
@@ -10,6 +11,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,10 +20,10 @@ const Login = () => {
 
     try {
       const user = await login(formData.email, formData.password);
-      toast.success('Welcome back!');
+      toast.success(t('welcomeBack'));
       navigate(user.isAdmin ? '/admin' : '/dashboard');
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Login failed');
+      toast.error(error?.response?.data?.message || t('loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -34,10 +36,10 @@ const Login = () => {
 
           {/* Header */}
           <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              Welcome Back!
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 leading-tight">
+              {t('welcomeBackTitle')}
             </h2>
-            <p className="text-gray-600">Sign in to continue your journey</p>
+            <p className="text-gray-600">{t('signInToContinue')}</p>
           </div>
 
           {/* Form */}
@@ -46,13 +48,13 @@ const Login = () => {
             {/* Email */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address
+                {t('email')}
               </label>
               <input
                 type="email"
                 required
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
-                placeholder="Enter your email"
+                placeholder={t('enterEmail')}
                 value={formData.email}
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
@@ -63,14 +65,14 @@ const Login = () => {
             {/* Password */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
+                {t('password')}
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   className="w-full px-4 py-3 pr-12 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="Enter your password"
+                  placeholder={t('enterPassword')}
                   value={formData.password}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
@@ -80,7 +82,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? (
@@ -101,10 +103,10 @@ const Login = () => {
               {loading ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Signing in...
+                  {t('signingIn')}
                 </div>
               ) : (
-                'Sign In'
+                t('signIn')
               )}
             </button>
           </form>
@@ -112,12 +114,12 @@ const Login = () => {
           {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-gray-600">
-              Don&apos;t have an account?{' '}
+              {t('dontHaveAccount')}{' '}
               <Link
                 to="/register"
                 className="text-blue-600 hover:text-purple-600 font-semibold transition-colors"
               >
-                Create Account
+                {t('createAccount')}
               </Link>
             </p>
           </div>
@@ -125,7 +127,7 @@ const Login = () => {
           {/* Admin Demo (remove in production) */}
           <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
             <p className="text-sm font-semibold text-gray-700 mb-2">
-              Admin Access:
+              {t('adminAccess')}
             </p>
             <p className="text-sm text-gray-600">Email: admin@studyabroad.com</p>
             <p className="text-sm text-gray-600">Password: admin123</p>

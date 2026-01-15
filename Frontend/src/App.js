@@ -5,6 +5,7 @@ import AOS from 'aos';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { AuthProvider } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Header from './components/Header';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -36,11 +37,12 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
-          <Header />
-          <Routes>
+    <LanguageProvider>
+      <AuthProvider>
+        <Router>
+          <div className="App">
+            <Header />
+            <Routes>
             <Route path="/" element={<NepalHome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -107,6 +109,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+    </LanguageProvider>
   );
 }
 
